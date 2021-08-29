@@ -1,7 +1,7 @@
 <div align='center'>
   <br />
   <p>
-    <a href='https://github.com/YapleeProject/Yaplee'><img src='https://raw.githubusercontent.com/YapleeProject/Yaplee/master/images/logo.png' width='546' alt='Yaplee Logo' /></a>
+    <a href='https://github.com/ThisIsMatin/Yaplee'><img src='https://github.com/ThisIsMatin/Yaplee/blob/main/images/logo.png?raw=true' width='546' alt='Yaplee Logo' /></a>
   </p>
     <br />
   <p>
