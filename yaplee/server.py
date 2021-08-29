@@ -1,4 +1,5 @@
 import os
+import random
 import socket
 import shutil
 import subprocess
@@ -33,7 +34,13 @@ class Server:
                 template,
                 template_to_copy
             )
-            if 'style' in meta['meta']:
+
+            tag_loc, tags = '', {}
+
+            if 'tags' in meta['meta']:
+                tag_loc, tags = meta['meta']['tags']()
+
+            elif 'style' in meta['meta']:
                 if type(meta['meta']['style']) is str:
                     styles = [meta['meta']['style']]
                 elif type(meta['meta']['style']) is list:
@@ -42,14 +49,20 @@ class Server:
                     raise UnknownTemplateValue(
                         'template style must be list or string (one style)'
                     )
+                tag_loc, tags = 'head', {
+                    str(random.randint(111111, 999999)):BeautifulSoup('', 'html.parser').new_tag(
+                        'link', rel='stylesheet', href=style
+                    ) for style in styles
+                }
                 
-                with open(template_to_copy, 'r+') as file:
-                    template_data = file.read()
-                    soup = BeautifulSoup(template_data, 'html.parser')
-                    for s in styles:
-                        soup.head.append(soup.new_tag('link', rel='stylesheet', href=s))
-                    file.write(soup.prettify())
-                    del file
+            with open(template_to_copy, 'r+') as file:
+                template_data = file.read()
+                soup = BeautifulSoup(template_data, 'html.parser')
+                for tagname, tag in tags.items():
+                    soup.find(tag_loc).append(tag)
+                file.truncate(0)
+                file.write(soup.prettify())
+                del file
 
             generated_files.append(to_copy_path)
 
@@ -69,7 +82,7 @@ class Server:
             with open(os.path.join('.yaplee', 'index.html'), 'w+') as file:
                 file.write(nohtml_base)
         subprocess.run(
-            'python3 -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory ".yaplee"',
+            ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory ".yaplee"',
         shell=True
         )
     
