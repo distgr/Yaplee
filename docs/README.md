@@ -14,4 +14,5 @@
 </div>
 
 * [Getting Started](https://github.com/ThisIsMatin/Yaplee/blob/main/docs/getting-started.md)
+* [App object](https://github.com/ThisIsMatin/Yaplee/blob/main/docs/app.md)
 * [Templates](https://github.com/ThisIsMatin/Yaplee/blob/main/docs/templates.md)
