@@ -20,7 +20,6 @@ class app:
     
     def start(self):
         server = Server(self.__metabase)
-        server.remove_yaplee_dir()
         if not 'initial' in self.__metabase['actions']:
             raise InitialNotFound('Initial function is required for any yaplee project')
         print('Loading your yaplee project meta...')
