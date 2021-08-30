@@ -7,11 +7,12 @@ class app:
     def __init__(self):
         self.__metabase = {
             'actions': {},
-            'config': {'debug': True, 'sync': None, 'port': 8989},
+            'config': {'debug': True, 'sync': None, 'port': 8989, 'opentab': False},
             'tree': {},
             'templates': {}
         }
         self.__on_init = False
+        self.is_debug = self.__metabase['config']['debug']
 
     def init(self, initial_func):
         self.__metabase['actions']['initial'], self.__on_init = initial_func, True
@@ -80,6 +81,10 @@ class app:
         
         if 'debug' in lower_kwargs:
             set_meta['debug'] = lower_kwargs['debug']
+            self.is_debug = set_meta['debug']
+        
+        if 'opentab' in lower_kwargs:
+            set_meta['opentab'] = kwargs['opentab']
 
         if 'sync' in lower_kwargs:
             if lower_kwargs['sync'] not in allowed_sync_types:

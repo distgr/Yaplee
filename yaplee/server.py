@@ -1,6 +1,8 @@
 import os
 import random
 import tempfile
+import webbrowser
+import time
 import uuid
 import socket
 import shutil
@@ -14,6 +16,7 @@ class Server:
         self.port = meta['config']['port']
         self.templates = meta['templates']
         self.tree = meta['tree']
+        self.opentab = meta['config']['opentab']
         self.tempuuid = ''
         self.module_path = str(pathlib.Path(__file__).resolve().parent)
     
@@ -90,10 +93,13 @@ class Server:
             )
             with open(os.path.join(temp_path, 'index.html'), 'w+') as file:
                 file.write(nohtml_base)
-        print(temp_path)
+
+        if self.opentab:
+            webbrowser.open('http://127.0.0.1:{}/'.format(str(self.port)))
+            time.sleep(1)
         subprocess.run(
             ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory "'+temp_path+'"',
-        shell=True
+            shell=True
         )
     
     def remove_yaplee_dir(self):
