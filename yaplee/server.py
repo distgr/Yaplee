@@ -1,5 +1,7 @@
 import os
 import random
+import tempfile
+import uuid
 import socket
 import shutil
 import subprocess
@@ -12,6 +14,7 @@ class Server:
         self.port = meta['config']['port']
         self.templates = meta['templates']
         self.tree = meta['tree']
+        self.tempuuid = ''
         self.module_path = str(pathlib.Path(__file__).resolve().parent)
     
     def is_port_open(self):
@@ -20,16 +23,22 @@ class Server:
         port_open = a_socket.connect_ex(local_connection)
         a_socket.close()
         return not (not port_open)
+
+    def __gen_yaplee_temp(self):
+        self.tempuuid = uuid.uuid1().hex[:15]
+        path = os.path.join(tempfile.gettempdir(), self.tempuuid)
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        return self.tempuuid, path
     
     def start(self):
         generated_files = []
-        if not os.path.isdir('.yaplee'):
-            os.mkdir('.yaplee')
-
+        temp_uuid, temp_path = self.__gen_yaplee_temp()
+        
         for template, meta in self.templates.items():
             template = template.split('-_-')[0]
             to_copy_path = meta['load_name'] if meta['load_name'] else template
-            template_to_copy = os.path.join('.yaplee', to_copy_path.replace('\\', '/' if os.name == 'posix' else '\\'))
+            template_to_copy = os.path.join(temp_path, to_copy_path.replace('\\', '/' if os.name == 'posix' else '\\'))
             shutil.copy(
                 template,
                 template_to_copy
@@ -79,13 +88,14 @@ class Server:
                     ) for i, j in self.templates.items()])
                 )
             )
-            with open(os.path.join('.yaplee', 'index.html'), 'w+') as file:
+            with open(os.path.join(temp_path, 'index.html'), 'w+') as file:
                 file.write(nohtml_base)
+        print(temp_path)
         subprocess.run(
-            ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory ".yaplee"',
+            ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory "'+temp_path+'"',
         shell=True
         )
     
     def remove_yaplee_dir(self):
-        if os.path.isdir('.yaplee'):
-            shutil.rmtree('.yaplee')
+        if os.path.isdir(os.path.join(tempfile.gettempdir(), self.tempuuid)):
+            shutil.rmtree(os.path.join(tempfile.gettempdir(), self.tempuuid))
