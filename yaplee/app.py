@@ -1,5 +1,7 @@
 import os
+import sys
 from yaplee.server import Server
+from yaplee.meta import syncable
 from yaplee.errors import (SetError, SyncError, InitialNotFound,
                             TemplateNotFound, PortOnUse, TemplateExist, UnknownTemplateValue)
 
@@ -23,7 +25,12 @@ class app:
         server = Server(self.__metabase)
         if not 'initial' in self.__metabase['actions']:
             raise InitialNotFound('Initial function is required for any yaplee project')
-        print('Loading your yaplee project meta...')
+        if not self.__metabase['config']['debug']:
+            return
+        if self.__metabase['config']['sync']:
+            return
+        print('Starting yaplee debug development server...')
+        print(((' '*3)+'- ')+'Tip: You can use `CTRL + C` to close development server')
         port = self.__metabase['config']['port']
         if not server.is_port_open():
             raise PortOnUse('{} port is on use, make sure another yaplee server is not started or {}'.format(str(port), 
@@ -34,6 +41,11 @@ class app:
             server.start()
         except KeyboardInterrupt:
             server.remove_yaplee_dir()
+
+    def auto_sync(self, fw):
+        if fw.lower() not in syncable:
+            raise SyncError('Yaplee cannot sync with \'{}\''.format(fw))
+        print('Preparing your Yaplee application...')
 
     def template(self, template_path, **kwargs):
         if not os.path.isfile(template_path):
@@ -73,7 +85,6 @@ class app:
 
     def config(self, **kwargs):
         set_meta = self.__metabase['config']
-        allowed_sync_types = ('django',)
         lower_kwargs = {kwarg.lower():val for kwarg, val in kwargs.items()}
 
         if not self.__on_init:
@@ -87,7 +98,7 @@ class app:
             set_meta['opentab'] = kwargs['opentab']
 
         if 'sync' in lower_kwargs:
-            if lower_kwargs['sync'] not in allowed_sync_types:
+            if lower_kwargs['sync'] not in syncable:
                 raise SyncError('Yaplee cannot sync with \'{}\''.format(kwargs['sync']))
             set_meta['sync'] = lower_kwargs['sync']
         

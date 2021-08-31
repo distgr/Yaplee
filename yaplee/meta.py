@@ -1,0 +1,1 @@
+syncable = ('django', )
