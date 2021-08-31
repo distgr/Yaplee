@@ -51,6 +51,22 @@ class Server:
 
             if 'tags' in meta['meta']:
                 tag_loc, tags = meta['meta']['tags']()
+                
+                for tag_meta, tag in tags.items():
+                    tag_source = ''
+                    tag_name = str(tag_meta.split('-_-')[0])
+                    if tag_name in ['link']:
+                        tag_source = str(tag.get('href'))
+                    else:
+                        try:
+                            tag_source = str(tag.get('src'))
+                        except:
+                            continue
+                    if '://' not in tag_source:
+                        shutil.copy(
+                            tag_source,
+                            os.path.join(temp_path, tag_source)
+                        )
 
             elif 'style' in meta['meta']:
                 if type(meta['meta']['style']) is str:
@@ -66,6 +82,11 @@ class Server:
                         'link', rel='stylesheet', href=style
                     ) for style in styles
                 }
+                for style in styles:
+                    shutil.copy(
+                        style,
+                        os.path.join(temp_path, style)
+                    )
                 
             with open(template_to_copy, 'r+') as file:
                 template_data = file.read()
@@ -86,7 +107,7 @@ class Server:
             nohtml_base = nohtml_base.replace('{% avaliable_paths %}', 
                 '' if not self.templates else
                 '<h4>Avaliable paths : {}</h4>'.format(
-                    ', '.join(['<a href="{}">{}</a>'.format(
+                    ', '.join(['<a href="{}" target="_blank">{}</a>'.format(
                         i.split('-_-')[0], i if not j['name'] else j['name'].title()
                     ) for i, j in self.templates.items()])
                 )
@@ -105,3 +126,4 @@ class Server:
     def remove_yaplee_dir(self):
         if os.path.isdir(os.path.join(tempfile.gettempdir(), self.tempuuid)):
             shutil.rmtree(os.path.join(tempfile.gettempdir(), self.tempuuid))
+    
