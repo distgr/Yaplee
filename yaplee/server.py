@@ -54,20 +54,29 @@ class Server:
                 
                 for tag_meta, tag in tags.items():
                     tag_source = ''
+                    is_tag_has_source = False
                     tag_name = str(tag_meta.split('-_-')[0])
                     if tag_name in ['link']:
-                        tag_source = str(tag.get('href'))
+                        if 'href' in str(tag):
+                            tag_source = tag.get('href')
+                            is_tag_has_source = True
                     else:
                         try:
-                            tag_source = str(tag.get('src'))
+                            if 'src' in str(tag):
+                                tag_source = tag.get('src')
+                                is_tag_has_source = True
                         except:
                             continue
-                    if '://' not in tag_source:
+                    if is_tag_has_source and ('://' not in tag_source and tag_source):
                         shutil.copy(
                             tag_source,
                             os.path.join(temp_path, tag_source)
                         )
-
+                    if 'tagvalue' in tag.attrs:
+                        tagvalue = tag.get('tagvalue')
+                        del tag.attrs['tagvalue']
+                        tag.append(tagvalue)
+                        
             elif 'style' in meta['meta']:
                 if type(meta['meta']['style']) is str:
                     styles = [meta['meta']['style']]
