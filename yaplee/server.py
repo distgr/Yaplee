@@ -36,6 +36,7 @@ class Server:
     
     def start(self):
         generated_files = []
+        js_functions = {}
         temp_uuid, temp_path = self.__gen_yaplee_temp()
         
         for template, meta in self.templates.items():
@@ -76,6 +77,9 @@ class Server:
                         tagvalue = tag.get('tagvalue')
                         del tag.attrs['tagvalue']
                         tag.append(tagvalue)
+            
+            elif 'functions' in meta['meta']:
+                js_functions = {i.__name__:i for i in meta['meta']['functions']}
                         
             elif 'style' in meta['meta']:
                 if type(meta['meta']['style']) is str:
@@ -102,6 +106,15 @@ class Server:
                 soup = BeautifulSoup(template_data, 'html.parser')
                 for tagname, tag in tags.items():
                     soup.find(tag_loc).append(tag)
+                for funcname, function in js_functions.items():
+                    unique_id = str(uuid.uuid1()).split('-')[0]
+                    soup.html.append(soup.new_tag('script', id=unique_id))
+                    soup.find('script', {'id': unique_id}).append(
+                        'function '+funcname+'(){ '+
+                        '\n'.join([i for i in function()])+
+                        ' }'
+                    )
+                    print('okebs')
                 file.truncate(0)
                 file.write(soup.prettify())
                 del file
