@@ -11,11 +11,8 @@
 </div>
 
 ## About
-Yaplee is a Powerful, Fun and Open Souce MIT-Licenced project for front-end programming in Python.
+Yaplee is a Fun and Open Souce MIT-Licenced project for static and simple front-end programming in Python.
 Yaplee framework is very simple and does not have complicated details.
-
-## Quick installation
-To quickly install the Yaplee project, just use the " ```pip install yaplee``` " command.
 
 ## Documents
 You can see the full document of this project from the docs folder in the repository.
