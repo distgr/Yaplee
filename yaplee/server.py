@@ -114,7 +114,6 @@ class Server:
                         '\n'.join([i for i in function()])+
                         ' }'
                     )
-                    print('okebs')
                 file.truncate(0)
                 file.write(soup.prettify())
                 del file
@@ -130,7 +129,8 @@ class Server:
                 '' if not self.templates else
                 '<h4>Avaliable paths : {}</h4>'.format(
                     ', '.join(['<a href="{}" target="_blank">{}</a>'.format(
-                        i.split('-_-')[0], i if not j['name'] else j['name'].title()
+                            i.split('-_-')[0] if j['load_name'] == None else j['load_name'],
+                            i if not j['name'] else j['name'].title()
                     ) for i, j in self.templates.items()])
                 )
             )
