@@ -53,3 +53,5 @@ Using global variables you can access general variables in the project.
 
 * Config global variables :
   * `is_debug` -> bool : Debug mode status in config
+  * `opentab` -> bool : Automatic open local project tab in browser
+  
