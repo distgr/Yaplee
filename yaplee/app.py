@@ -7,6 +7,10 @@ from yaplee.errors import (SetError, SyncError, InitialNotFound,
 
 class app:
     def __init__(self):
+        if(os.geteuid() and os.name == 'posix'):
+            sys.exit(
+                print('Warning: Please run app in sudo')
+            )
         self.__metabase = {
             'actions': {},
             'config': {'debug': True, 'sync': None, 'port': 8989, 'opentab': False},
@@ -20,7 +24,7 @@ class app:
         self.__metabase['actions']['initial'], self.__on_init = initial_func, True
         initial_func()
         self.__on_init = False
-    
+
     def start(self):
         server = Server(self.__metabase)
         if not 'initial' in self.__metabase['actions']:
@@ -33,7 +37,7 @@ class app:
         print(((' '*3)+'- ')+'Tip: You can use `CTRL + C` to close development server')
         port = self.__metabase['config']['port']
         if not server.is_port_open():
-            raise PortOnUse('{} port is on use, make sure another yaplee server is not started or {}'.format(str(port), 
+            raise PortOnUse('{} port is on use, make sure another yaplee server is not started or {}'.format(str(port),
                 ('use another port on your yaplee app config') if port != 8989 else
                 ('change the yaplee development server port by adding \'port=...\' on yaplee server config')
             ))
@@ -79,7 +83,7 @@ class app:
         if not self.__on_init:
             raise SetError('You can only use \'.add(...)\' in yaplee app initial function')
         print(kwargs)
-    
+
     def tree(self, tree):
         self.__metabase['tree'] = tree
 
@@ -89,11 +93,11 @@ class app:
 
         if not self.__on_init:
             raise SetError('You can only use \'.config(...)\' in yaplee app initial function')
-        
+
         if 'debug' in lower_kwargs:
             set_meta['debug'] = lower_kwargs['debug']
             self.is_debug = set_meta['debug']
-        
+
         if 'opentab' in lower_kwargs:
             set_meta['opentab'] = kwargs['opentab']
 
@@ -101,8 +105,8 @@ class app:
             if lower_kwargs['sync'] not in syncable:
                 raise SyncError('Yaplee cannot sync with \'{}\''.format(kwargs['sync']))
             set_meta['sync'] = lower_kwargs['sync']
-        
+
         if 'port' in lower_kwargs:
             set_meta['port'] = lower_kwargs['port']
-        
+
         self.__metabase['config'] = set_meta

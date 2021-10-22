@@ -1,10 +1,14 @@
-import sys, os, pathlib
+import sys, os, pathlib, stat
 from yaplee.app import app
 from yaplee.sync import YapleeSync
 from yaplee.meta import syncable
 
 class YapleeManager:
     def __init__(self):
+        if(os.geteuid() and os.name == 'posix'):
+            sys.exit(
+                print('Warning: Please use yaplee command in sudo')
+            )
         self.user_path = os.getcwd()
         self.module_path = str(pathlib.Path(__file__).resolve().parent)
         self.argv = [argv.lower() for argv in sys.argv][1:]
@@ -34,14 +38,14 @@ class YapleeManager:
             print((' '*tabs)+'- '+op+('\n'+(' '*tabs)+' '*6)+description.capitalize())
         if exit:
             sys.exit()
-    
+
     def __check_argv(self):
         if not self.argv:
             print('\nUsage: yaplee [OPTIONS] COMMAND [ARGS]...\n')
             self.__print_subs('commands', {
                 'new [name]': 'to create a yaplee blank file',
             }, exit=True)
-        
+
         if self.argv[0] == 'new':
             sync_with_app = ''
 
@@ -110,10 +114,12 @@ class YapleeManager:
                     f.write(blankapp_data)
                     blankapp.close()
                     del blankapp
+                if(os.name == 'posix'):
+                    os.chmod(os.path.join(self.user_path, app_name), 0o777)
                 f.close()
                 del f
             print('Yaplee blank project created successfully!')
         else:
             print('[YapleeError]: No such command \'{}\''.format(' '.join(sys.argv[1:])))
-        
+
         sys.exit()
