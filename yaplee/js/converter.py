@@ -7,7 +7,7 @@ class JSFunc(object):
         self._orig = func
         self._initial_scope = initial_scope
 
-        source_code = inspect.getsource(func)
+        source_code = self.__function_replacement(inspect.getsource(func))
         code_ast = ast.parse(textwrap.dedent(source_code))
         self._code = code_ast.body[0].body
 
@@ -30,6 +30,14 @@ class JSFunc(object):
             self._code,
             _Scope(self._initial_scope)
         )
+
+    def __function_replacement(self, source):
+        replace_to = {
+            '.upper()': '.toUpperCase()'
+        }
+        for key, value in replace_to.items():
+            source = source.replace(key, value)
+        return source
 
     def __call__(self, *args, **kwargs):
         return self._orig(*args, **kwargs)
