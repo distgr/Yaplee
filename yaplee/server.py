@@ -10,6 +10,7 @@ import subprocess
 import pathlib
 from bs4 import BeautifulSoup
 from yaplee.errors import UnknownTemplateValue
+from yaplee.js.converter import JSFunc
 
 class Server:
     def __init__(self, meta) -> None:
@@ -111,7 +112,7 @@ class Server:
                     soup.html.append(soup.new_tag('script', id=unique_id))
                     soup.find('script', {'id': unique_id}).append(
                         'function '+funcname+'(){ '+
-                        '\n'.join([i for i in function()])+
+                        str(JSFunc(function))+
                         ' }'
                     )
                 file.truncate(0)
