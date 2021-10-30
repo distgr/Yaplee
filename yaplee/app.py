@@ -18,6 +18,7 @@ class app:
             'templates': {}
         }
         self.__on_init = False
+        self.user_path = os.getcwd()
         self.is_debug = self.__metabase['config']['debug']
 
     def init(self, initial_func):
@@ -49,7 +50,19 @@ class app:
     def auto_sync(self, fw):
         if fw.lower() not in syncable:
             raise SyncError('Yaplee cannot sync with \'{}\''.format(fw))
-        print('Preparing your Yaplee application...')
+        if os.environ.get('RUN_MAIN') != 'true':
+            print('[Yaplee] : Preparing your application...')
+            server = Server(self.__metabase)
+            settings_py_path = os.path.join(self.user_path, self.user_path.split(os.path.sep)[-1], 'settings.py')
+            with open(settings_py_path, 'r+') as settings_py_data:
+                settings_py_data = settings_py_data.read()
+            with open(settings_py_path, 'w+') as settings_py:
+                if 'import os' not in settings_py_data:
+                    settings_py_data = settings_py_data.replace('from pathlib import Path', "import os\nfrom pathlib import Path")
+                if 'yaplee_dir' not in settings_py_data:
+                    settings_py_data = settings_py_data.replace("'DIRS': [],", "'DIRS': [os.environ.get('yaplee_dir')],")
+                settings_py.write(settings_py_data)
+            os.environ['yaplee_dir'] = server.temp_path
 
     def template(self, template_path, **kwargs):
         if not os.path.isfile(template_path):
