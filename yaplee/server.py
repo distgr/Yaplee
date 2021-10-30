@@ -20,7 +20,8 @@ class Server:
         self.opentab = meta['config']['opentab']
         self.tempuuid = ''
         self.module_path = str(pathlib.Path(__file__).resolve().parent)
-    
+        self.temp_uuid, self.temp_path = self.__gen_yaplee_temp()
+
     def is_port_open(self):
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         local_connection = ('127.0.0.1', self.port)
@@ -34,16 +35,15 @@ class Server:
         if not os.path.isdir(path):
             os.mkdir(path)
         return self.tempuuid, path
-    
+
     def start(self):
         generated_files = []
         js_functions = {}
-        temp_uuid, temp_path = self.__gen_yaplee_temp()
-        
+
         for template, meta in self.templates.items():
             template = template.split('-_-')[0]
             to_copy_path = meta['load_name'] if meta['load_name'] else template
-            template_to_copy = os.path.join(temp_path, to_copy_path.replace('\\', '/' if os.name == 'posix' else '\\'))
+            template_to_copy = os.path.join(self.temp_path, to_copy_path.replace('\\', '/' if os.name == 'posix' else '\\'))
             shutil.copy(
                 template,
                 template_to_copy
@@ -53,7 +53,7 @@ class Server:
 
             if 'tags' in meta['meta']:
                 tag_loc, tags = meta['meta']['tags']()
-                
+
                 for tag_meta, tag in tags.items():
                     tag_source = ''
                     is_tag_has_source = False
@@ -72,16 +72,16 @@ class Server:
                     if is_tag_has_source and ('://' not in tag_source and tag_source):
                         shutil.copy(
                             tag_source,
-                            os.path.join(temp_path, tag_source)
+                            os.path.join(self.temp_path, tag_source)
                         )
                     if 'tagvalue' in tag.attrs:
                         tagvalue = tag.get('tagvalue')
                         del tag.attrs['tagvalue']
                         tag.append(tagvalue)
-            
+
             elif 'functions' in meta['meta']:
                 js_functions = {i.__name__:i for i in meta['meta']['functions']}
-                        
+
             elif 'style' in meta['meta']:
                 if type(meta['meta']['style']) is str:
                     styles = [meta['meta']['style']]
@@ -99,9 +99,9 @@ class Server:
                 for style in styles:
                     shutil.copy(
                         style,
-                        os.path.join(temp_path, style)
+                        os.path.join(self.temp_path, style)
                     )
-                
+
             with open(template_to_copy, 'r+') as file:
                 template_data = file.read()
                 soup = BeautifulSoup(template_data, 'html.parser')
@@ -126,27 +126,27 @@ class Server:
                 nohtml_base = file.read()
                 file.close()
                 del file
-            nohtml_base = nohtml_base.replace('{% avaliable_paths %}', 
+            nohtml_base = nohtml_base.replace('{% avaliable_paths %}',
                 '' if not self.templates else
                 '<h4>Avaliable paths : {}</h4>'.format(
-                    ', '.join(['<a href="{}" target="_blank">{}</a>'.format(
+                    ', '.join(['<a style="text-decoration: none;" href="{}" target="_blank">{}</a>'.format(
                             i.split('-_-')[0] if j['load_name'] == None else j['load_name'],
-                            i if not j['name'] else j['name'].title()
+                            i.split('-_-')[0] if not j['name'] else j['name'].title()
                     ) for i, j in self.templates.items()])
                 )
             )
-            with open(os.path.join(temp_path, 'index.html'), 'w+') as file:
+            with open(os.path.join(self.temp_path, 'index.html'), 'w+') as file:
                 file.write(nohtml_base)
 
         if self.opentab:
             webbrowser.open('http://127.0.0.1:{}/'.format(str(self.port)))
             time.sleep(1)
+        yield self.temp_uuid, self.temp_path
         subprocess.run(
-            ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory "'+temp_path+'"',
+            ('python3' if os.name == 'posix' else 'python')+' -m http.server '+str(self.port)+' --bind 127.0.0.1 --directory "'+self.temp_path+'"',
             shell=True
         )
-    
+
     def remove_yaplee_dir(self):
         if os.path.isdir(os.path.join(tempfile.gettempdir(), self.tempuuid)):
             shutil.rmtree(os.path.join(tempfile.gettempdir(), self.tempuuid))
-    
