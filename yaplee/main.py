@@ -92,6 +92,13 @@ class YapleeManager:
                         )
                     )
                     manage_py_data = '\n'.join(manage_py_data)
+                    with open(os.path.join(self.user_path, 'manage.py'), 'r+') as manage_py_read:
+                        manage_py_readdata = manage_py_read.read()
+                        if self.sync_comment in manage_py_readdata:
+                            manage_py_read.close()
+                            sys.exit(
+                                print('You have already synced your project with a yaplee app')
+                            )
                     with open(os.path.join(self.user_path, 'manage.py'), 'w+') as manage_py:
                         manage_py.write(manage_py_data)
                         manage_py.close()
