@@ -43,7 +43,7 @@ class app:
                 ('change the yaplee development server port by adding \'port=...\' on yaplee server config')
             ))
         try:
-            server.start()
+            temp_uuid, temp_path = server.start()
         except KeyboardInterrupt:
             server.remove_yaplee_dir()
 
