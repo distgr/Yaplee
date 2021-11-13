@@ -1,7 +1,6 @@
 class Generator:
     def __init__(self) -> None:
         pass
-        self.call('alert', '')
     
     def format_entry(self, entry, getstr=False):
         if type(entry) == str:
