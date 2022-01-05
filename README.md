@@ -15,9 +15,9 @@ Yaplee is a Fun and Open Souce MIT-Licenced project for static and simple front-
 ## Installation
 First download or clone the project and then install it using ***setup.py*** :
 ```bash
-user@example:~$ git clone https://github.com/ThisIsMatin/Yaplee
-user@example:~$ cd Yaplee/
-user@example:~$ sudo python3 setup.py install
+$ git clone https://github.com/ThisIsMatin/Yaplee
+$ cd Yaplee/
+$ sudo python3 setup.py install
 ```
 
 ## Contributing

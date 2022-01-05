@@ -34,12 +34,12 @@ The Yaplee framework can be synced with other web frameworks, and you can use Ya
 To create an Yaplee project and sync it automatically with your Django project, first go to the main folder of your Django project (where manage.py is located) :
 
 ```bash
-user@example:~$ sudo django-admin startproject testproject
-user@example:~$ cd testproject/
+$ sudo django-admin startproject testproject
+$ cd testproject/
 ```
 Then create an Yaplee app here and set the sync argument to Django:
 ```bash
-user@example:~/testproject$ sudo yaplee new --sync django
+$ sudo yaplee new --sync django
 ```
 Done! Your Django project is now synced with the Yaplee app.
 ### How it works ?
@@ -64,7 +64,7 @@ Done! Your Django project is now synced with the Yaplee app.
     ```
 3. Done! Now start your Django project:
     ```bash
-    user@example:~/testproject$ sudo python3 manage.py runserver
+    $ sudo python3 manage.py runserver
 
     [Yaplee] : Preparing your application...
     Watching for file changes with StatReloader
