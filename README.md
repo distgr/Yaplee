@@ -10,9 +10,18 @@
   </p>
 </div>
 
-## About
-Yaplee is a Fun and Open Souce MIT-Licenced project for static and simple front-end programming in Python.
-Yaplee framework is very simple and does not have complicated details.
+Yaplee is a Fun and Open Souce MIT-Licenced project for static and simple front-end programming in Python. **You can see the full document of this project from the docs folder in the repository.**
 
-## Documents
-You can see the full document of this project from the docs folder in the repository.
+## Installation
+First download or clone the project and then install it using ***setup.py*** :
+```bash
+user@example:~$ git clone https://github.com/ThisIsMatin/Yaplee
+user@example:~$ cd Yaplee/
+user@example:~$ sudo python3 setup.py install
+```
+
+## Contributing
+There are no restrictions on contributing to this project; Just fork the project, create a branch for your changes and commit the changes on that branch, and finally push that brunch and create a pull request!
+
+## Security Policy
+If you see a particular problem, bug or vulnerability in Yaplee project, please open an issue for it. Thank you!
