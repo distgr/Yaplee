@@ -38,8 +38,8 @@ class Server:
             os.mkdir(path)
 
         return self.tempuuid, path
-
-    def start(self):
+    
+    def generate_files(self):
         generated_files = []
         js_functions = {}
 
@@ -151,6 +151,8 @@ class Server:
             with open(os.path.join(self.temp_path, 'index.html'), 'w+') as file:
                 file.write(nohtml_base)
 
+    def start(self):
+        self.generate_files()
         if self.opentab:
             webbrowser.open('http://127.0.0.1:{}/'.format(str(self.port)))
             time.sleep(1)
