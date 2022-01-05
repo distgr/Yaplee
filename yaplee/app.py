@@ -61,6 +61,8 @@ class app:
             server = Server(self.__metabase)
             settings_py_path = os.path.join(self.user_path, self.user_path.split(os.path.sep)[-1], 'settings.py')
 
+            server.generate_files()
+
             with open(settings_py_path, 'r+') as settings_py_data:
                 settings_py_data = settings_py_data.read()
 
@@ -78,6 +80,7 @@ class app:
                 settings_py.write(settings_py_data)
 
             os.environ['yaplee_dir'] = server.temp_path
+            
 
     def template(self, template_path, **kwargs):
         if not os.path.isfile(template_path):
