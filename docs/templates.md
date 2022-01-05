@@ -24,6 +24,7 @@
         <li><a href="#add-tags-using-tagmanager-recommended">Add tags using TagManager (Recommended)</a></li>
       </ul>
     </li>
+    <li><a href="#javascript-functions">JavaScript functions</a></li>
   </ol>
 </details>
 
@@ -109,4 +110,22 @@ def MainPage():
     head_tags.add('meta', charset='UTF-8')
 
     return {'tags': head_tags}
+```
+## Javascript Functions
+You can write JavaScript functions in your Yaplee project file as a Python function. Your Python function is eventually translated to the JavaScript function and loaded on yaplee template/page.
+
+To write a function, write your function in your template function. Finally, write the function objects as a list in the dictionary that the template returns. For example :
+
+```python
+@myapp.template('main.html')
+def MainPage():
+    def my_function():
+      alert('Hello, World!')
+    return {'functions': [my_function]}
+```
+Note: Write your JavaScript code in the function and don't pay attention to IDE syntax/import errors.
+
+You can then call the function in the template as follows:
+```html
+<button onclick="my_function()">Click on me!</button>
 ```
