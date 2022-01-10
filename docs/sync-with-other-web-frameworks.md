@@ -23,6 +23,7 @@
         <li><a href="#sync-with-django">Django</a></li>
       </ul>
     </li>
+    <li><a href="#dockerizing">Dockerizing</a></li>
   </ol>
 </details>
 
@@ -75,3 +76,38 @@ Done! Your Django project is now synced with the Yaplee app.
     Starting development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
     ```
+
+## Dockerizing
+#### Using Dockerfile:
+To dockerize a django project synced with Yaplee, you can do the following:
+```bash
+$ django-admin startproject project
+$ cd project/
+```
+Create a Dockerfile and write your Dockerfile as an example in it:
+```dockerfile
+FROM python:latest
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /project
+
+COPY . /project
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+```
+Be sure to include the Django version and the libraries required by your project in requirements.txt and add 0.0.0.0 to the allowed hosts in settings.py
+
+Because Yaplee has not yet been officially released, you can't write Yaplee's library name in your project ``requirements.txt``. So connect the yaplee to your project as follows and finally build your project ‌:
+
+```bash
+$ git clone https://github.com/ThisIsMatin/Yaplee
+$ cat ./Yaplee/requirements.txt >> requirements.txt
+$ mv ./Yaplee/yaplee/ . && rm -rf ./Yaplee
+$ sudo docker build --tag django/yaplee:1.0 .
+```
+* Your project is ready and you can run the Docker image now!
