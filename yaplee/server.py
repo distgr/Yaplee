@@ -46,7 +46,8 @@ class Server:
         for template, meta in self.templates.items():
             template = template.split('-_-')[0]
             to_copy_path = meta['load_name'] if meta['load_name'] else template
-            template_to_copy = os.path.join(self.temp_path, to_copy_path.replace('\\', '/' if os.name == 'posix' else '\\'))
+            to_copy_path = to_copy_path.split(os.sep)[-1]
+            template_to_copy = os.path.join(self.temp_path, to_copy_path.replace('\\', os.sep))
             shutil.copy(
                 template,
                 template_to_copy
